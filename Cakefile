@@ -44,21 +44,19 @@ mocha =
 
   script: ->
     @testLibs() +
-    @jquery() +
     "chai.use(sinonChai);\n" +
     "chai.should();\n" +
     "mocha.setup('bdd');\n"
 
   testLibs: ->
+    fs.readFileSync('node_modules/jquery-browser/lib/jquery.js') +
     fs.readFileSync('node_modules/mocha/mocha.js') +
+    fs.readFileSync('node_modules/chai/chai.js') +
     fs.readFileSync('node_modules/sinon/lib/sinon.js') +
     fs.readFileSync('node_modules/sinon/lib/sinon/spy.js') +
     fs.readFileSync('node_modules/sinon/lib/sinon/stub.js') +
     fs.readFileSync('node_modules/sinon-chai/lib/sinon-chai.js') +
-    fs.readFileSync('node_modules/chai/chai.js')
-
-  jquery: ->
-    fs.readFileSync('node_modules/jquery-browser/lib/jquery.js') + "\n"
+    fs.readFileSync('node_modules/chai-jquery/chai-jquery.js')
 
   lib: ->
     fs.readFileSync('lib/pages.js')

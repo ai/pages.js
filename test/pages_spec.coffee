@@ -48,7 +48,7 @@ describe 'Pages', ->
         $$('.child').should.to.have.length(1)
         this.should.eql(page)
         page.should.to.have.length(2)
-        page.is('.a').should.be.true
+        page.should.have.class('a')
         done()
 
       Pages.add('.a', a)
@@ -153,3 +153,21 @@ describe 'Pages', ->
       Pages.animating.end()
       callback.should.not.have.been.called
       Pages.animating.waiting.should.be.false
+
+  describe '.page()', ->
+
+    it 'should find loaded page by url', ->
+      html '<article class="page a" data-url="/a"></article>' +
+           '<div data-url="/a"></div>'
+      Pages.page('/a').should.have.class('a')
+
+  describe '.pagesSelector', ->
+    selector = null
+    beforeEach -> selector = Pages.pagesSelector
+    afterEach  -> Pages.pagesSelector = selector
+
+    it 'should use in loaded page finding', ->
+      html '<article class="page a" data-url="/a"></article>' +
+           '<div data-url="/a"></div>'
+      Pages.pagesSelector = 'div'
+      Pages.page('/a').should.have.be('div')
