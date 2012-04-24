@@ -53,12 +53,12 @@ mocha =
     fs.readFileSync('node_modules/mocha/mocha.js') +
     fs.readFileSync('node_modules/sinon/lib/sinon.js') +
     fs.readFileSync('node_modules/sinon/lib/sinon/spy.js') +
+    fs.readFileSync('node_modules/sinon/lib/sinon/stub.js') +
     fs.readFileSync('node_modules/sinon-chai/lib/sinon-chai.js') +
     fs.readFileSync('node_modules/chai/chai.js')
 
   jquery: ->
-    "module = {};\n" +
-    fs.readFileSync('node_modules/jquery/node-jquery.js') + "\n"
+    fs.readFileSync('node_modules/jquery-browser/lib/jquery.js') + "\n"
 
   lib: ->
     fs.readFileSync('lib/pages.js')

@@ -2,7 +2,7 @@
   "name": "pages.js",
   "version": "0.0.1-alpha",
   "dependencies": {
-    "jquery": "1.6.3"
+    "jquery-browser": "1.7.2-2"
   },
   "devDependencies": {
     "coffee-script": "1.3.1",
