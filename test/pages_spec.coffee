@@ -45,3 +45,8 @@ describe 'Pages', ->
 
       Pages.add('.a', a)
       html '<div class="a"><div class="child"></div></div><div class="a"></div>'
+
+  describe '.isSupported()', ->
+
+    it 'should return boolean', ->
+      Pages.isSupported().should.be.a('boolean')
