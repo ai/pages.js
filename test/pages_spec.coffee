@@ -132,3 +132,24 @@ describe 'Pages', ->
       html '<a href="/a" data-pages-disable></a>'
       Pages._openLink($(Pages._document).find('a'))
       Pages.open.should.not.have.been.called
+
+  describe '.animating', ->
+
+    it 'should run callbacks now without running animation', ->
+      callback = sinon.spy()
+      Pages.animating.wait(callback)
+      callback.should.have.been.called
+      Pages.animating.waiting.should.be.false
+
+    it 'should run callback, when animation wll end', ->
+      callback = sinon.spy()
+
+      Pages.animating.start()
+      Pages.animating.waiting.should.be.true
+
+      Pages.animating.wait(callback)
+      callback.should.not.have.been.called
+
+      Pages.animating.end()
+      callback.should.not.have.been.called
+      Pages.animating.waiting.should.be.false
