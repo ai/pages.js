@@ -1,17 +1,22 @@
 describe 'Pages', ->
+  title      = null
   animations = null
+
+  before ->
+    title = document.title
 
   beforeEach ->
     Pages.enable()
     animations = Pages.animations
 
   afterEach ->
+    Pages.animating.end()
+    document.title   = title
     Pages._pages     = []
     Pages._document  = document
     Pages.animation  = 'immediately'
     Pages.animations = animations
     Pages.disable()
-    Pages.animating.end()
     for method of Pages
       Pages[method]?.restore?()
 
@@ -170,10 +175,6 @@ describe 'Pages', ->
 
   describe '.title()', ->
 
-    title = null
-    before -> title = document.title
-    after  -> document.title = title
-
     it 'should change title', ->
       Pages.title('New')
       document.title.should.eql('New')
@@ -266,6 +267,16 @@ describe 'Pages', ->
       animationArgs[2]()
       Pages.current.should.be('.b')
       Pages.animating.waiting.should.be.false
+
+    it 'should not change title to undefined', ->
+      html '<article data-url="/a"></article>'
+      Pages.animations.a = { animate: sinon.spy() }
+      Pages.animation = 'a'
+
+      sinon.stub(Pages, 'title')
+      Pages._openPage(find('article'))
+
+      Pages.title.should.not.have.been.called
 
     it 'should take animation from page', ->
       html '<article data-url="/a" data-pages-animation="a"></article>'
