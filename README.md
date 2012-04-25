@@ -21,3 +21,5 @@
    ```
 
 4. And open tests in browser: <localhost:8000>.
+5. Also you can see real usage example in integration test:
+   <localhost:8000/integration>.

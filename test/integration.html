@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8'>
+    <title>Pages.js Integration Test</title>
+    <script src="/jquery.js"></script>
+    <script src="/pages.js"></script>
+    <script>
+      jQuery.get = function(url, callback) {
+        if ( url == '/integration/deals' ) {
+          setTimeout(function() {
+            callback(
+              '<article class="page" data-url="/integration/deals">' +
+                'Deals' +
+              '</article>')
+          }, 1000);
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/integration">Home</a></li>
+        <li><a href="/integration/deals">Deals</a></li>
+        <li><a href="/integration/contacts">Contacts</a></li>
+      </ul>
+    </nav>
+    <article class="page" data-url="/integration">
+      Home
+    </article>
+    <article class="page" data-url="/integration/contacts">
+      Contacts
+    </article>
+    <script>
+      if ( location.protocol == 'file:' ) {
+        document.body.innerText =
+          'You need to run integration test from Cakefile. See README.md.';
+      }
+    </script>
+  </body>
+</html>
