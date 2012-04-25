@@ -147,6 +147,7 @@ describe 'Pages', ->
       Pages.page('/a').should.have.class('a')
 
   describe '.pagesSelector', ->
+
     selector = null
     beforeEach -> selector = Pages.pagesSelector
     afterEach  -> Pages.pagesSelector = selector
@@ -166,6 +167,16 @@ describe 'Pages', ->
       callback = ->
       Pages.load('/a', a: 1, callback)
       jQuery.get.should.have.been.calledWith('/a', callback)
+
+  describe '.title()', ->
+
+    title = null
+    before -> title = document.title
+    after  -> document.title = title
+
+    it 'should change title', ->
+      Pages.title('New')
+      document.title.should.eql('New')
 
   describe '.animating', ->
 
@@ -220,12 +231,15 @@ describe 'Pages', ->
   describe '._openPage()', ->
 
     it 'should should animated change pages', ->
-      html '<article class="page a"></article>' +
-           '<article class="page b" data-b="B" data-c="C"></article>'
+      html '<article class="page a" data-url="/a"></article>' +
+           '<article class="page b" data-url="/b" data-title="B" ' +
+             'data-b="B" data-c="C"></article>'
       a = find('.a')
       b = find('.b')
       b.data(d: 'D')
       Pages.current = a
+
+      sinon.stub(Pages, 'title')
 
       animationArgs = []
       Pages.animations.test = {
@@ -239,13 +253,15 @@ describe 'Pages', ->
       Pages.animations.test.animate.should.not.have.been.called
 
       Pages.animating.end()
+      Pages.title.should.have.been.calledWith('B')
       Pages.animations.test.animate.should.have.been.called
       Pages.current.should.be('.a')
       Pages.animating.waiting.should.be.true
 
       animationArgs[0].should.be('.a')
       animationArgs[1].should.be('.b')
-      animationArgs[3].should.eql({ a: 'a', b: 'b', c: 'C', d: 'D' })
+      animationArgs[3].should.
+        eql({ url: '/b', title: 'B', a: 'a', b: 'b', c: 'C', d: 'D' })
 
       animationArgs[2]()
       Pages.current.should.be('.b')

@@ -10,7 +10,7 @@
         if ( url == '/integration/deals' ) {
           setTimeout(function() {
             callback(
-              '<article class="page" data-url="/integration/deals">' +
+              '<article class="page" data-url="/integration/deals" data-title="Deals">' +
                 'Deals' +
               '</article>')
           }, 1000);
@@ -26,10 +26,10 @@
         <li><a href="/integration/contacts">Contacts</a></li>
       </ul>
     </nav>
-    <article class="page" data-url="/integration">
+    <article class="page" data-url="/integration" data-title="Pages.js Integration Test">
       Home
     </article>
-    <article class="page" data-url="/integration/contacts">
+    <article class="page" data-url="/integration/contacts" data-title="Contacts">
       Contacts
     </article>
     <script>
