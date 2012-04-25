@@ -190,20 +190,29 @@ describe 'Pages', ->
 
   describe '._openLink()', ->
 
-    it 'should open url by link', ->
+    beforeEach ->
       sinon.stub(Pages, 'open')
+      sinon.stub(history, 'pushState')
+
+    afterEach ->
+      history.pushState.restore?()
+
+    it 'should open url by link', ->
       html '<a href="/a" data-a="1"></a>'
       Pages._openLink(find('a'))
       Pages.open.should.have.been.calledWith('/a', a: 1)
 
+    it 'should change document location', ->
+      html '<a href="/a" data-a="1"></a>'
+      Pages._openLink(find('a'))
+      history.pushState.should.have.been.calledWith({ }, '', '/a')
+
     it 'should not open external url by link', ->
-      sinon.spy(Pages, 'open')
       html '<a href="http://example.com/"></a>'
       Pages._openLink(find('a'))
       Pages.open.should.not.have.been.called
 
     it 'should not open urb by disabled link', ->
-      sinon.spy(Pages, 'open')
       html '<a href="/a" data-pages-disable></a>'
       Pages._openLink(find('a'))
       Pages.open.should.not.have.been.called
