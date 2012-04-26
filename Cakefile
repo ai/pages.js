@@ -18,6 +18,9 @@ mocha =
                 jQuery(document).ready(function() { mocha.run(); });
               </script>
               <style>
+                body {
+                  padding: 0;
+                }
                 #integration {
                   position: absolute;
                   margin-left: 80px;
@@ -47,9 +50,9 @@ mocha =
     html
 
   cdata: (text) ->
-    "//<![CDATA[\n" +
+    "/*<![CDATA[*/\n" +
     text + "\n" +
-    "//]]>"
+    "/*]]>*/"
 
   style: ->
     fs.readFileSync('node_modules/mocha/mocha.css')
