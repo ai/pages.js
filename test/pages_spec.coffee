@@ -4,8 +4,12 @@ describe 'Pages', ->
 
   before ->
     title = document.title
+    # Disable function, that can broke test page
+    history.pushState = ->
+    jQuery.ajax = ->
 
   beforeEach ->
+    Pages._document = $('<div />')
     Pages.enable()
     animations = Pages.animations
 
@@ -13,7 +17,6 @@ describe 'Pages', ->
     Pages.animating.end()
     document.title   = title
     Pages._pages     = []
-    Pages._document  = document
     Pages.animation  = 'immediately'
     Pages.animations = animations
     Pages.disable()
@@ -40,32 +43,12 @@ describe 'Pages', ->
       Pages.add('.a-page', load)
       Pages._pages.should.eql([{ selector: '.a-page', load: load }])
 
-  describe 'callbacks', ->
+  describe '.init()', ->
 
-    it 'should call load callbacks', ->
-      a = sinon.spy()
-      b = sinon.spy()
-      c = sinon.spy()
-      Pages.add('.a', a)
-      Pages.add('.b', b)
-      Pages.add('.c', c)
-      html '<div class="a"></div><div class="a"></div><div class="b"></div>'
-
-      a.should.have.been.calledOnce
-      b.should.have.been.calledOnce
-      c.should.not.have.been.called
-
-    it 'should pass arguments to callback', (done) ->
-      a = ($, $$, page) ->
-        $.should.eql(jQuery)
-        $$('.child').should.to.have.length(1)
-        this.should.eql(page)
-        page.should.to.have.length(2)
-        page.should.have.class('a')
-        done()
-
-      Pages.add('.a', a)
-      html '<div class="a"><div class="child"></div></div><div class="a"></div>'
+    it 'should trigger load events if Pages is enable', ->
+      sinon.stub(Pages, '_loadEvent')
+      html '<div />'
+      Pages._loadEvent.should.have.been.calledWith($(Pages._document))
 
   describe '.isSupported()', ->
 
@@ -89,7 +72,7 @@ describe 'Pages', ->
     it 'should add events', ->
       Pages.enable()
       $(window).data('events').popstate.should.to.have.length(1)
-      $(document).data('events').click.should.to.have.length(1)
+      $(Pages._document).data('events').click.should.to.have.length(1)
 
     it 'should not enabled twice', ->
       Pages.enable().should.be.true
@@ -105,13 +88,19 @@ describe 'Pages', ->
     it 'should remove events', ->
       Pages.disable()
       (typeof $(window).data('events') ).should.eql('undefined')
-      (typeof $(document).data('events') ).should.eql('undefined')
+      (typeof $(Pages._document).data('events') ).should.eql('undefined')
 
   describe 'history events', ->
 
-    it 'should open page by popstate event', ->
+    it 'should not open page by popstate event without URL changes', ->
       sinon.spy(Pages, 'open')
-      $(window).triggerHandler('popstate.pages')
+      $(window).trigger('popstate.pages')
+      Pages.open.should.not.have.been.calledWith('/')
+
+    it 'should open page by popstate event, when URL change', ->
+      Pages._lastUrl = null
+      sinon.spy(Pages, 'open')
+      $(window).trigger('popstate.pages')
       Pages.open.should.have.been.calledWith('/')
 
     it 'should open page by link click', ->
@@ -131,18 +120,35 @@ describe 'Pages', ->
 
       Pages.open('/a').should.be.true
       Pages._openPage.should.have.been.calledWith(a, { })
+      Pages._lastUrl.should == '/a'
 
     it 'should load new page', ->
-      html ''
+      html '<div><article class="page b" data-url="/b"></article></div>'
+      Pages.current = find('.b')
+
       sinon.stub(Pages, '_openPage')
       sinon.stub(Pages, 'load').withArgs('/a', { a: 1 }).
         callsArgWith(2, '<article class="page a" data-url="/a"></article>')
+
+      Pages.add('.a', sinon.spy())
 
       Pages.open('/a', { a: 1 }).should.be.false
       find('.a').should.be.exists
 
       Pages.load.should.have.been.called
+      Pages._pages[0].load.should.have.been.called
       Pages._openPage.should.have.been.called
+      find('.b').next().should.be('.a')
+
+    it 'should load new page without current one', ->
+      html '<div><article class="page b" data-url="/b"></article></div>'
+      sinon.stub(Pages, '_openPage')
+      sinon.stub(Pages, 'load').withArgs('/a', { a: 1 }).
+        callsArgWith(2, '<article class="page a" data-url="/a"></article>')
+
+      Pages.open('/a', { a: 1 })
+
+      find('.a').prev().should.be('div')
 
   describe '.page()', ->
 
@@ -150,6 +156,13 @@ describe 'Pages', ->
       html '<article class="page a" data-url="/a"></article>' +
            '<div data-url="/a"></div>'
       Pages.page('/a').should.have.class('a')
+
+    it 'should allow set base nodes to find inside', ->
+      html '<article class="page" data-url="/a"></article>' +
+           '<article class="page b" data-url="/a">' +
+             '<article class="page" data-url="/a"></article>' +
+           '</article>'
+      Pages.page('/a', find('.b')).should.have.length(2)
 
   describe '.pagesSelector', ->
 
@@ -199,6 +212,37 @@ describe 'Pages', ->
       Pages.animating.end()
       callback.should.have.been.called
       Pages.animating.waiting.should.be.false
+
+  describe '._loadEvent()', ->
+
+    it 'should run load event', ->
+      h = $('<div class="a"></div>' +
+            '<div class="a"></div>' +
+            '<div><div class="b"></div></div>')
+      a = sinon.spy()
+      b = sinon.spy()
+      c = sinon.spy()
+      Pages.add('.a', a)
+      Pages.add('.b', b)
+      Pages.add('.c', c)
+
+      Pages._loadEvent(h)
+
+      a.should.have.been.calledOnce
+      b.should.have.been.calledOnce
+      c.should.not.have.been.called
+
+    it 'should pass arguments to callback', (done) ->
+      a = ($, $$, page) ->
+        $.should.eql(jQuery)
+        $$('.child').should.to.have.length(1)
+        this.should.eql(page)
+        page.should.to.have.length(2)
+        page.should.have.class('a')
+        done()
+
+      Pages.add('.a', a)
+      html '<div class="a"><div class="child"></div></div><div class="a"></div>'
 
   describe '._openLink()', ->
 
