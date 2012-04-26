@@ -9,7 +9,7 @@ describe 'Pages', ->
     jQuery.ajax = ->
 
   beforeEach ->
-    Pages._document = $('<div />')
+    Pages._document = $('<div />')[0]
     Pages.enable()
     animations = Pages.animations
 
@@ -25,7 +25,8 @@ describe 'Pages', ->
 
   html = (string) ->
     Pages.disable()
-    Pages._document = jQuery("<div>#{string}</div>")[0]
+    Pages._document = document.implementation.createHTMLDocument('')
+    $(Pages._document.body).html(string)
     Pages.init()
     Pages.enable()
 
@@ -111,11 +112,12 @@ describe 'Pages', ->
 
   describe '.open()', ->
 
+    beforeEach -> sinon.stub(Pages, '_openPage')
+
     it 'should open loaded page', ->
       html '<article class="page a" data-url="/a"></article>'
 
       a = find('.a')
-      sinon.stub(Pages, '_openPage')
       sinon.stub(Pages, 'page').withArgs('/a').returns(a)
 
       Pages.open('/a').should.be.true
@@ -125,8 +127,6 @@ describe 'Pages', ->
     it 'should load new page', ->
       html '<div><article class="page b" data-url="/b"></article></div>'
       Pages.current = find('.b')
-
-      sinon.stub(Pages, '_openPage')
       sinon.stub(Pages, 'load').withArgs('/a', { a: 1 }).
         callsArgWith(2, '<article class="page a" data-url="/a"></article>')
 
@@ -142,13 +142,22 @@ describe 'Pages', ->
 
     it 'should load new page without current one', ->
       html '<div><article class="page b" data-url="/b"></article></div>'
-      sinon.stub(Pages, '_openPage')
-      sinon.stub(Pages, 'load').withArgs('/a', { a: 1 }).
+      sinon.stub(Pages, 'load').withArgs('/a', { }).
         callsArgWith(2, '<article class="page a" data-url="/a"></article>')
+      Pages.open('/a')
+      find('.a').prev().should.be('div')
+
+    it 'should tell that it load page', ->
+      html ''
+      loaded = ->
+      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
 
       Pages.open('/a', { a: 1 })
 
-      find('.a').prev().should.be('div')
+      find('body').should.have.class('pages-loading')
+
+      loaded()
+      find('body').should.not.have.class('pages-loading')
 
   describe '.page()', ->
 
@@ -255,7 +264,7 @@ describe 'Pages', ->
 
     it 'should open url by link', ->
       html '<a href="/a" data-a="1"></a>'
-      Pages._openLink(find('a'))
+      Pages._openLink(find('a')).should.be.false
       Pages.open.should.have.been.calledWith('/a', a: 1)
 
     it 'should change document location', ->
@@ -265,12 +274,12 @@ describe 'Pages', ->
 
     it 'should not open external url by link', ->
       html '<a href="http://example.com/"></a>'
-      Pages._openLink(find('a'))
+      Pages._openLink(find('a')).should.be.true
       Pages.open.should.not.have.been.called
 
     it 'should not open urb by disabled link', ->
       html '<a href="/a" data-pages-disable></a>'
-      Pages._openLink(find('a'))
+      Pages._openLink(find('a')).should.be.true
       Pages.open.should.not.have.been.called
 
   describe '._openPage()', ->
@@ -341,15 +350,17 @@ describe 'Pages', ->
 
     describe '.immediately', ->
 
-      it 'should hide old page and show new', ->
+      it 'should call done immediately', ->
         html '<article class="page a"></article>' +
              '<article class="page b" style="display: hide"></article>'
         a    = find('.a')
         b    = find('.b')
+        sinon.stub(a, 'hide')
+        sinon.stub(b, 'show')
         done = sinon.spy()
 
         Pages.animations.immediately.animate(a, b, done)
 
-        a.css('display').should.eql('none')
-        b.css('display').should.eql('block')
+        a.hide.should.have.been.called
+        b.show.should.have.been.called
         done.should.have.been.called
