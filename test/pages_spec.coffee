@@ -127,67 +127,15 @@ describe 'Pages', ->
     it 'should load new page', ->
       html '<div><article class="page b" data-url="/b"></article></div>'
       Pages.current = find('.b')
-      sinon.stub Pages, 'load', (url, data, callback) ->
-        callback('<article class="page a" data-url="/a"></article>')
-
+      sinon.stub Pages, '_loadPages', (url, data, callback) ->
+        callback($('<article class="page a" data-url="/a"></article>').
+          insertAfter(Pages.current))
       Pages.add('.a', sinon.spy())
 
       Pages.open('/a', { a: 1 }).should.be.false
       find('.a').should.be.exists
-
-      Pages.load.should.have.been.called
-      Pages._pages[0].load.should.have.been.called
+      Pages._loadPages.should.have.been.called
       Pages._openPage.should.have.been.called
-      find('.b').next().should.be('.a')
-
-    it 'should load new page without current one', ->
-      html '<div><article class="page b" data-url="/b"></article></div>'
-      sinon.stub(Pages, 'load').withArgs('/a', { url: '/a' }).
-        callsArgWith(2, '<article class="page a" data-url="/a"></article>')
-      Pages.open('/a')
-      find('.a').prev().should.be('div')
-
-    it 'should tell to body that it load page', ->
-      html ''
-      body = find('body')
-      loading = sinon.spy()
-      body.on('page-loading', loading)
-      finish = sinon.spy()
-      body.on('page-loading-finish', finish)
-
-      loaded = ->
-      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
-
-      Pages.open('/a', { a: 1 })
-
-      body.should.have.class('page-loading')
-      loading.should.have.been.called
-      finish.should.not.have.been.called
-
-      loaded()
-      body.should.not.have.class('page-loading')
-      finish.should.have.been.called
-
-    it 'should tell to link that it load page', ->
-      html '<a href="/a"></a>'
-      a = find('a')
-      loading = sinon.spy()
-      a.on('page-loading', loading)
-      finish = sinon.spy()
-      a.on('page-loading-finish', finish)
-
-      loaded = ->
-      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
-
-      Pages._openLink(a)
-
-      a.should.have.class('page-loading')
-      loading.should.have.been.called
-      finish.should.not.have.been.called
-
-      loaded()
-      a.should.not.have.class('page-loading')
-      finish.should.have.been.called
 
   describe '.page()', ->
 
@@ -375,6 +323,70 @@ describe 'Pages', ->
 
       Pages.animations.a.animate.should.not.been.called
       Pages.animations.b.animate.should.been.called
+
+  describe '._loadPages()', ->
+
+    it 'should load new page', ->
+      html '<div><article class="page b" data-url="/b"></article></div>'
+      Pages.current = find('.b')
+      sinon.stub Pages, 'load', (url, data, callback) ->
+        callback('<article class="page a" data-url="/a"></article>')
+      callback = sinon.spy()
+      Pages.add('.a', sinon.spy())
+
+      Pages._loadPages('/a', { }, callback)
+
+      find('.a').should.be.exists
+      callback.should.have.been.called
+
+      Pages.load.should.have.been.called
+      Pages._pages[0].load.should.have.been.called
+      find('.b').next().should.be('.a')
+
+    it 'should load new page without current one', ->
+      html '<div><article class="page b" data-url="/b"></article></div>'
+      sinon.stub Pages, 'load', (url, data, callback) ->
+        callback('<article class="page a" data-url="/a"></article>')
+      Pages._loadPages('/a', { }, ->)
+      find('.a').prev().should.be('div')
+
+    it 'should tell to body that it load page', ->
+      html ''
+      body    = find('body')
+      loading = sinon.spy()
+      finish  = sinon.spy()
+      body.on('page-loading', loading).on('page-loading-finish', finish)
+      loaded  = ->
+      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
+
+      Pages._loadPages('/a', { a: 1 }, ->)
+
+      body.should.have.class('page-loading')
+      loading.should.have.been.called
+      finish.should.not.have.been.called
+
+      loaded()
+      body.should.not.have.class('page-loading')
+      finish.should.have.been.called
+
+    it 'should tell to link that it load page', ->
+      html '<a href="/a"></a>'
+      a       = find('a')
+      loading = sinon.spy()
+      finish  = sinon.spy()
+      a.on('page-loading', loading).on('page-loading-finish', finish)
+      loaded  = ->
+      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
+
+      Pages._loadPages('/a', { link: a }, ->)
+
+      a.should.have.class('page-loading')
+      loading.should.have.been.called
+      finish.should.not.have.been.called
+
+      loaded()
+      a.should.not.have.class('page-loading')
+      finish.should.have.been.called
 
   describe '.animations', ->
 
