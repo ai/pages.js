@@ -151,42 +151,42 @@ describe 'Pages', ->
       html ''
       body = find('body')
       loading = sinon.spy()
-      body.on('pages-loading', loading)
+      body.on('page-loading', loading)
       finish = sinon.spy()
-      body.on('pages-loading-finish', finish)
+      body.on('page-loading-finish', finish)
 
       loaded = ->
       sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
 
       Pages.open('/a', { a: 1 })
 
-      body.should.have.class('pages-loading')
+      body.should.have.class('page-loading')
       loading.should.have.been.called
       finish.should.not.have.been.called
 
       loaded()
-      body.should.not.have.class('pages-loading')
+      body.should.not.have.class('page-loading')
       finish.should.have.been.called
 
     it 'should tell to link that it load page', ->
       html '<a href="/a"></a>'
       a = find('a')
       loading = sinon.spy()
-      a.on('pages-loading', loading)
+      a.on('page-loading', loading)
       finish = sinon.spy()
-      a.on('pages-loading-finish', finish)
+      a.on('page-loading-finish', finish)
 
       loaded = ->
       sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
 
       Pages._openLink(a)
 
-      a.should.have.class('pages-loading')
+      a.should.have.class('page-loading')
       loading.should.have.been.called
       finish.should.not.have.been.called
 
       loaded()
-      a.should.not.have.class('pages-loading')
+      a.should.not.have.class('page-loading')
       finish.should.have.been.called
 
   describe '.page()', ->

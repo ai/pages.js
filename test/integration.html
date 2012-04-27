@@ -10,7 +10,8 @@
         if ( url == '/integration/deals' ) {
           setTimeout(function() {
             callback(
-              '<article class="page" data-url="/integration/deals" data-title="Deals">' +
+              '<article class="page" ' +
+                'data-url="/integration/deals" data-title="Deals">' +
                 'Deals' +
               '</article>')
           }, 1000);
@@ -18,7 +19,7 @@
       };
     </script>
     <style>
-      body.pages-loading { opacity: 0.4; }
+      body.page-loading { opacity: 0.4; }
     </style>
   </head>
   <body>
