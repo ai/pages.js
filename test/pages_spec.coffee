@@ -368,16 +368,16 @@ describe 'Pages', ->
       Pages.title.should.not.have.been.called
 
     it 'should take animation from page', ->
-      html '<article data-url="/a" data-pages-animation="a"></article>'
+      html '<article data-url="/a" data-page-animation="a"></article>'
       Pages.animations.a = { animate: sinon.spy() }
       Pages._openPage(find('article'))
       Pages.animations.a.animate.should.been.called
 
     it 'should take animation from link first', ->
-      html '<article data-url="/a" data-pages-animation="a"></article>'
+      html '<article data-url="/a" data-page-animation="a"></article>'
       Pages.animations.a = { animate: sinon.spy() }
       Pages.animations.b = { animate: sinon.spy() }
-      Pages._openPage(find('article'), { pagesAnimation: 'b' })
+      Pages._openPage(find('article'), { pageAnimation: 'b' })
 
       Pages.animations.a.animate.should.not.been.called
       Pages.animations.b.animate.should.been.called
