@@ -10,6 +10,7 @@ describe 'Pages', ->
 
   beforeEach ->
     Pages._document = $('<div />')[0]
+    Pages._current = $('')
     Pages.enable()
     animations = Pages.animations
 
@@ -43,6 +44,31 @@ describe 'Pages', ->
       load = ->
       Pages.add('.a-page', load)
       Pages._pages.should.eql([{ selector: '.a-page', load: load }])
+    
+    it 'should call load callback at all pages', ->
+      callback = ($, $$, page) ->
+        page.should.to.have.length(2)
+
+      Pages.add('.a', callback)
+      html '<article class="page a"><a href=""></a></article>' +
+           '<article class="page a"><a href=""></a></article>'
+
+    it 'should pass arguments to callbacks', ->
+      callback = ($, $$, page) ->
+        $.should.eql(jQuery)
+        $$('a').should.to.have.length(1)
+        this.should.eql(page)
+        page.should.have.class('a')
+
+      Pages.add('.a', load: ( -> ), open: ( -> ), close: ( -> ))
+      sinon.stub(Pages._pages[0], 'load',  callback)
+      sinon.stub(Pages._pages[0], 'open',  callback)
+      sinon.stub(Pages._pages[0], 'close', callback)
+      html '<article class="page a"><a href=""></a></article>' +
+           '<article class="page b"><a href=""></a></article>'
+
+      Pages._setCurrent(find('a'))
+      Pages._setCurrent(find('b'))
 
   describe '.init()', ->
 
@@ -50,6 +76,13 @@ describe 'Pages', ->
       sinon.stub(Pages, '_loadEvent')
       html '<div />'
       Pages._loadEvent.should.have.been.calledWith($(Pages._document))
+
+    it 'should set current', ->
+      html '<article class="page a"></article>'
+      sinon.stub(Pages, '_findCurrent').returns(find('.a'))
+      sinon.stub(Pages, '_setCurrent')
+      Pages.init()
+      Pages._setCurrent.should.been.calledWith(find('.a'))
 
   describe '.isSupported()', ->
 
@@ -200,6 +233,20 @@ describe 'Pages', ->
       callback.should.have.been.called
       Pages.animating.waiting.should.be.false
 
+  describe '._subfind()', ->
+
+    it 'should create subfind function', ->
+      html '<div class="a"><a href="#"></a></div>' +
+           '<div class="b"><a href="#"></a></div>'
+
+      a = Pages._subfind(find('.a'))
+      b = Pages._subfind(find('.b'))
+
+      a('a').should.have.length(1)
+      a('a').parent().should.be('.a')
+      b('a').should.have.length(1)
+      b('a').parent().should.be('.b')
+
   describe '._loadEvent()', ->
 
     it 'should run load event', ->
@@ -219,17 +266,28 @@ describe 'Pages', ->
       b.should.have.been.calledOnce
       c.should.not.have.been.called
 
-    it 'should pass arguments to callback', (done) ->
-      a = ($, $$, page) ->
-        $.should.eql(jQuery)
-        $$('.child').should.to.have.length(1)
-        this.should.eql(page)
-        page.should.to.have.length(2)
-        page.should.have.class('a')
-        done()
+  describe '._setCurrent()', ->
 
-      Pages.add('.a', a)
-      html '<div class="a"><div class="child"></div></div><div class="a"></div>'
+    it 'should call open and close events', ->
+      html '<article class="page a"></article>' +
+           '<article class="page b"></article>'
+      Pages.current = $('')
+      Pages.add('.a', open: sinon.spy(), close: sinon.spy())
+      Pages.add('.b', open: sinon.spy(), close: sinon.spy())
+
+      Pages._setCurrent(find('.a'))
+      Pages.current.should.eql(find('.a'))
+      Pages._pages[0].open.should.have.been.calledOnce
+      Pages._pages[1].open.should.not.have.been.called
+      Pages._pages[0].close.should.not.have.been.called
+      Pages._pages[1].close.should.not.have.been.called
+
+      Pages._setCurrent(find('.b'))
+      Pages.current.should.eql(find('.b'))
+      Pages._pages[0].open.should.have.been.calledOnce
+      Pages._pages[1].open.should.have.been.calledOnce
+      Pages._pages[0].close.should.have.been.calledOnce
+      Pages._pages[1].close.should.not.have.been.called
 
   describe '._openLink()', ->
 
@@ -345,6 +403,7 @@ describe 'Pages', ->
 
     it 'should load new page without current one', ->
       html '<div><article class="page b" data-url="/b"></article></div>'
+      Pages.current = $('')
       sinon.stub Pages, 'load', (url, data, callback) ->
         callback('<article class="page a" data-url="/a"></article>')
       Pages._loadPages('/a', { }, ->)

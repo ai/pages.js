@@ -10,13 +10,31 @@
         if ( url == '/integration/deals' ) {
           setTimeout(function() {
             callback(
-              '<article class="page" ' +
+              '<article class="page deals" ' +
                 'data-url="/integration/deals" data-title="Deals">' +
                 'Deals' +
               '</article>')
           }, 1000);
         }
       };
+
+      Pages.add('.home', function($, $$, page) {
+        page.text(page.text() + '.');
+      });
+
+      Pages.add('.deals', function($, $$, page) {
+        page.text(page.text() + '!');
+      });
+
+      var contacts = '';
+      Pages.add('.contacts', {
+        load: function($, $$, page) {
+          contacts = page.text()
+        },
+        open: function($, $$, page) {
+          page.text(contacts + ' at ' + (new Date).toLocaleTimeString());
+        }
+      });
     </script>
     <style>
       body.page-loading { opacity: 0.4; }
@@ -30,12 +48,8 @@
         <li><a href="/integration/contacts">Contacts</a></li>
       </ul>
     </nav>
-    <article class="page" data-url="/integration" data-title="Pages.js Integration Test">
-      Home
-    </article>
-    <article class="page" data-url="/integration/contacts" data-title="Contacts" style="display: none">
-      Contacts
-    </article>
+    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home</article>
+    <article class="page contacts" data-url="/integration/contacts" data-title="Contacts" style="display: none">Contacts</article>
     <script>
       if ( location.protocol == 'file:' ) {
         document.body.innerText =
