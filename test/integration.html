@@ -19,20 +19,20 @@
       };
 
       Pages.add('.home', function($, $$, page) {
-        page.text(page.text() + '.');
+        page.html(page.html() + '.');
       });
 
       Pages.add('.deals', function($, $$, page) {
-        page.text(page.text() + '!');
+        page.html(page.html() + '!');
       });
 
       var contacts = '';
       Pages.add('.contacts', {
         load: function($, $$, page) {
-          contacts = page.text()
+          contacts = page.html()
         },
         open: function($, $$, page) {
-          page.text(contacts + ' at ' + (new Date).toLocaleTimeString());
+          page.html(contacts + ' at ' + (new Date).toLocaleTimeString());
         }
       });
     </script>
@@ -48,7 +48,7 @@
         <li><a href="/integration/contacts">Contacts</a></li>
       </ul>
     </nav>
-    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home</article>
+    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home. See also <a href="/integration/contacts" data-pages-animation="immediately">contacts</a></article>
     <article class="page contacts" data-url="/integration/contacts" data-title="Contacts" style="display: none">Contacts</article>
     <script>
       if ( location.protocol == 'file:' ) {

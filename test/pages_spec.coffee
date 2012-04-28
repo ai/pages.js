@@ -446,22 +446,3 @@ describe 'Pages', ->
       loaded()
       a.should.not.have.class('page-loading')
       finish.should.have.been.called
-
-  describe '.animations', ->
-
-    describe '.immediately', ->
-
-      it 'should call done immediately', ->
-        html '<article class="page a"></article>' +
-             '<article class="page b" style="display: hide"></article>'
-        a    = find('.a')
-        b    = find('.b')
-        sinon.stub(a, 'hide')
-        sinon.stub(b, 'show')
-        done = sinon.spy()
-
-        Pages.animations.immediately.animate(a, b, done)
-
-        a.hide.should.have.been.called
-        b.show.should.have.been.called
-        done.should.have.been.called
