@@ -1,19 +1,19 @@
 # Pages.js
 
-Pages.js is a framework for [History pushState]. It allow you to manage
+Pages.js is a framework for [History pushState]. It allows you to manage
 pages JS code and forget about low-level APIs.
 
-History pushState is a API to manage user history, it allow you to change
+History pushState is a API to manage user history, it allows you to change
 document URL from JS and have full AJAX pages, without `#` in URL.
 
 For example, user on `example.com` click on usual link (`example.com/conacts`),
-but browser doesn’t load new URL. JS load new page by AJAX, change pages with
-some animation and change URL to `example.com/contacts`. Of cource, you can use
-Back button (and go to `exampl.com`) or send current URL to your friend
-(and friend open contacts page directly).
+but browser doesn’t load new URL. JS loads new page by AJAX, changes pages
+with some animation and changes URL to `example.com/contacts`. Of course,
+you can use Back button (and go to `example.com`) or send current URL to your
+friend (and friend will open contact’s page directly).
 
 History pushState is supported by modern browsers, but Pages.js will work in
-browsers without this API too. Them will be load pages by old way with document
+browsers without this API too. They will load pages in an old way with document
 reloading.
 
 Sponsored by [Evil Martians].
@@ -106,9 +106,9 @@ by `selector`:
 * `load`: `function ($, $$, page)` which will be called, when page is loaded
   (already contained in document or loaded after by AJAX). Good place to add
   events handlers to HTML tags.
-* `open`:  `function ($, $$, page)` which will be called, when page become to be
-  visible (called on document ready and when URL is changed).
-* `close`: `function ($, $$, page)` which will be called, when page become to be
+* `open`:  `function ($, $$, page)` which will be called, when page becomes
+  visible (it is happened when document ready and when URL is changed).
+* `close`: `function ($, $$, page)` which will be called, when page becomes
   hidden (URL changed and another page become to be open).
 
 Callbacks get three arguments:
@@ -118,7 +118,7 @@ Callbacks get three arguments:
   than `$`). For example `$$('a')` is equal to `$('a', page)`.
 * `page`: jQuery-nodes of selected pages.
 
-You can pass `load` as second argument without another options:
+You can pass `load` as second argument without other options:
 
 ```js
 Pages.add('.comments-page', function($, $$, page) {
@@ -128,8 +128,8 @@ Pages.add('.comments-page', function($, $$, page) {
 
 ### Loading
 
-When Pages,js load new page by AJAX it set `page-loading` class to body and
-trigger `page-loading` event on it. When page will be loaded, `page-loading`
+When Pages.js load new page by AJAX it sets `page-loading` class to body and
+trigger `page-loading` event on it. When page is loaded, `page-loading`
 class will be removed and `page-loaded` event will be triggered.
 
 ```css
@@ -160,7 +160,7 @@ You can change animation for special page or link by `data-page-animation`
 attribute.
 
 You can create you own animation, just add object with `animate` function.
-When animation end, you *must* call `done` argument.
+When animation ends, you *must* call `done` argument.
 
 ```js
 Pages.animation.cool = {
@@ -174,7 +174,7 @@ Pages.animation.cool = {
 Pages.animation = 'cool';
 ```
 
-Argument `data` contain merged page and link data attributes:
+Argument `data` contains merged page and link data attributes:
 
 ```html
 <a href="/" data-direction="right">Home</a>
