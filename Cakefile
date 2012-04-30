@@ -1,6 +1,10 @@
-fs     = require('fs')
+fs     = require('fs-extra')
+exec   = require('child_process').exec
 http   = require('http')
+path   = require('path')
+glob   = require('glob')
 coffee = require('coffee-script')
+wrench = require('wrench')
 
 mocha =
 
@@ -103,3 +107,22 @@ task 'test', 'Run specs server', ->
       res.write 'Not Found'
     res.end()
   server.listen 8000
+
+task 'gem', 'Build RubyGem package', ->
+  wrench.rmdirSyncRecursive('build/') if path.existsSync('build/')
+  wrench.mkdirSyncRecursive('build/lib/')
+  wrench.mkdirSyncRecursive('build/vendor/assets/javascripts/')
+  fs.copyFileSync('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
+  fs.copyFileSync('gem/pagesjs.rb', 'build/lib/pagesjs.rb')
+  fs.copyFileSync('lib/pages.js',   'build/vendor/assets/javascripts/pages.js')
+  fs.copyFileSync('README.md',      'build/README.md')
+  fs.copyFileSync('LICENSE',        'build/LICENSE')
+  exec 'cd build/; gem build pagesjs.gemspec', (error, message) ->
+    if error
+      process.stderr.write(error.message)
+      process.exit(1)
+    else
+      fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
+      gem = glob.sync('build/*.gem')[0]
+      fs.copyFileSync(gem, gem.replace(/^build\//, 'pkg/'))
+      wrench.rmdirSyncRecursive('build/')
