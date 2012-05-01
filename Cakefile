@@ -5,6 +5,7 @@ path   = require('path')
 glob   = require('glob')
 coffee = require('coffee-script')
 wrench = require('wrench')
+uglify = require('uglify-js')
 
 mocha =
 
@@ -108,8 +109,20 @@ task 'test', 'Run specs server', ->
     res.end()
   server.listen 8000
 
+task 'min', 'Create minimized version of library', ->
+  fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
+  version = JSON.parse(fs.readFileSync('package.json')).version
+  source  = fs.readFileSync('lib/pages.js').toString()
+
+  ast = uglify.parser.parse(source)
+  ast = uglify.uglify.ast_mangle(ast)
+  ast = uglify.uglify.ast_squeeze(ast)
+  min = uglify.uglify.gen_code(ast)
+
+  fs.writeFileSync("pkg/pages-#{version}.min.js", min)
+
 task 'gem', 'Build RubyGem package', ->
-  wrench.rmdirSyncRecursive('build/') if path.existsSync('build/')
+  fs.rmrfSync('build/') if path.existsSync('build/')
   wrench.mkdirSyncRecursive('build/lib/')
   wrench.mkdirSyncRecursive('build/vendor/assets/javascripts/')
   fs.copyFileSync('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
