@@ -69,7 +69,7 @@ For Ruby on Rails you can use gem for Assets Pipeline.
 3. Include Pages.js to your `application.js.coffee`:
 
    ```coffee
-   #= require pagesjs
+   #= require pages
    ```
 
 ### Others
