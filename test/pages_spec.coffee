@@ -415,8 +415,8 @@ describe 'Pages', ->
       loading = sinon.spy()
       loaded  = sinon.spy()
       body.on('page-loading', loading).on('page-loaded', loaded)
-      loaded  = ->
-      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
+      load = ->
+      sinon.stub Pages, 'load', (url, data, callback) -> load = callback
 
       Pages._loadPages('/a', { a: 1 }, ->)
 
@@ -424,7 +424,7 @@ describe 'Pages', ->
       loading.should.have.been.called
       loaded.should.not.have.been.called
 
-      loaded()
+      load()
       body.should.not.have.class('page-loading')
       loaded.should.have.been.called
 
@@ -434,8 +434,8 @@ describe 'Pages', ->
       loading = sinon.spy()
       loaded  = sinon.spy()
       a.on('page-loading', loading).on('page-loaded', loaded)
-      loaded  = ->
-      sinon.stub Pages, 'load', (url, data, callback) -> loaded = callback
+      load = ->
+      sinon.stub Pages, 'load', (url, data, callback) -> load = callback
 
       Pages._loadPages('/a', { link: a }, ->)
 
@@ -443,6 +443,6 @@ describe 'Pages', ->
       loading.should.have.been.called
       loaded.should.not.have.been.called
 
-      loaded()
+      load()
       a.should.not.have.class('page-loading')
       loaded.should.have.been.called
