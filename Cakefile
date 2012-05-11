@@ -20,7 +20,14 @@ mocha =
               <script src="/pages.js"></script>
               <script>#tests#</script>
               <script>
-                jQuery(document).ready(function() { mocha.run(); });
+                jQuery(document).ready(function() {
+                  mocha.setup({
+                    ui: 'bdd',
+                    reporter: mocha.reporters.HTML,
+                    ignoreLeaks: true
+                  });
+                  mocha.run();
+                });
               </script>
               <style>
                 body {
