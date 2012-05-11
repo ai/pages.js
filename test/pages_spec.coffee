@@ -44,7 +44,7 @@ describe 'Pages', ->
       load = ->
       Pages.add('.a-page', load)
       Pages._pages.should.eql([{ selector: '.a-page', load: load }])
-    
+
     it 'should call load callback at all pages', ->
       callback = ($, $$, page) ->
         page.should.to.have.length(2)
