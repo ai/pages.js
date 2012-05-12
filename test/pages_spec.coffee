@@ -73,9 +73,9 @@ describe 'Pages', ->
   describe '.init()', ->
 
     it 'should trigger load events if Pages is enable', ->
-      sinon.stub(Pages, '_loadEvent')
+      sinon.stub(Pages, '_enlive')
       html '<div />'
-      Pages._loadEvent.should.have.been.calledWith($(Pages._document))
+      Pages._enlive.should.have.been.calledWith($(Pages._document))
 
     it 'should set current', ->
       html '<article class="page a"></article>'
@@ -247,7 +247,7 @@ describe 'Pages', ->
       b('a').should.have.length(1)
       b('a').parent().should.be('.b')
 
-  describe '._loadEvent()', ->
+  describe '._enlive()', ->
 
     it 'should run load event', ->
       h = $('<div class="a"></div>' +
@@ -260,20 +260,24 @@ describe 'Pages', ->
       Pages.add('.b', b)
       Pages.add('.c', c)
 
-      Pages._loadEvent(h)
+      Pages._enlive(h)
 
       a.should.have.been.calledOnce
       b.should.have.been.calledOnce
       c.should.not.have.been.called
+
+      h.filter('.a').data('page').should.eql(Pages._pages[0])
+      h.find('.b').data('page').should.eql(Pages._pages[1])
 
   describe '._setCurrent()', ->
 
     it 'should call open and close events', ->
       html '<article class="page a"></article>' +
            '<article class="page b"></article>'
-      Pages.current = $('')
       Pages.add('.a', open: sinon.spy(), close: sinon.spy())
       Pages.add('.b', open: sinon.spy(), close: sinon.spy())
+      Pages._enlive($(Pages._document))
+      Pages.current = $('')
 
       Pages._setCurrent(find('.a'))
       Pages.current.should.eql(find('.a'))
