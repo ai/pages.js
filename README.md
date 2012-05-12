@@ -110,6 +110,8 @@ by `selector`:
   visible (it is happened when document ready and when URL is changed).
 * `close`: `function ($, $$, page)` which will be called, when page becomes
   hidden (URL changed and another page become to be open).
+* `animation`: `function (prev)` to return animation, depend on previous page.
+  For simple solution use `data-page-animation` attribute in page or link tags.
 
 Callbacks get three arguments:
 

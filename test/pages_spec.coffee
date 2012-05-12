@@ -386,6 +386,14 @@ describe 'Pages', ->
       Pages.animations.a.animate.should.not.been.called
       Pages.animations.b.animate.should.been.called
 
+    it 'should choose animation dynamically', ->
+      Pages.add '.a', animation: -> 'a'
+      html '<article class="page a" data-url="/a"></article>'
+      Pages.animations.a = { animate: sinon.spy() }
+
+      Pages._openPage(find('.a'))
+      Pages.animations.a.animate.should.been.called
+
   describe '._loadPages()', ->
 
     it 'should load new page', ->
