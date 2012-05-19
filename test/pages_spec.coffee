@@ -16,10 +16,11 @@ describe 'Pages', ->
 
   afterEach ->
     Pages.animating.end()
-    document.title   = title
-    Pages._pages     = []
-    Pages.animation  = 'immediately'
-    Pages.animations = animations
+    document.title       = title
+    Pages._pages         = []
+    Pages._liveCallbacks = []
+    Pages.animation      = 'immediately'
+    Pages.animations     = animations
     Pages.disable()
     for method of Pages
       Pages[method]?.restore?()
@@ -69,6 +70,11 @@ describe 'Pages', ->
 
       Pages._setCurrent(find('a'))
       Pages._setCurrent(find('b'))
+
+    it 'should add new content listener', ->
+      callback = ->
+      Pages.add(callback)
+      Pages._liveCallbacks.should.eql([callback])
 
   describe '.init()', ->
 
@@ -268,6 +274,14 @@ describe 'Pages', ->
 
       h.filter('.a').data('page').should.eql(Pages._pages[0])
       h.find('.b').data('page').should.eql(Pages._pages[1])
+
+    it 'should run common content listeners', ->
+      h = $('<div />')
+      a = sinon.spy()
+      Pages.add(a)
+      Pages._enlive(h)
+
+      a.should.have.been.calledOnce
 
   describe '._setCurrent()', ->
 

@@ -13,10 +13,15 @@
               '<article class="page deals" ' +
                 'data-url="/integration/deals" data-title="Deals">' +
                 'Deals' +
+                '<div role="del">DEL</div>' +
               '</article>')
           }, 1000);
         }
       };
+
+      Pages.add(function($, $$, content) {
+        $$('[role=del]').remove();
+      });
 
       Pages.add('.home', function($, $$, page) {
         page.html(page.html() + '.');
@@ -48,7 +53,7 @@
         <li><a href="/integration/contacts">Contacts</a></li>
       </ul>
     </nav>
-    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home. See also <a href="/integration/contacts" data-page-animation="immediately">contacts</a></article>
+    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home. See also <a href="/integration/contacts" data-page-animation="immediately">contacts</a><div role="del">DEL</div></article>
     <article class="page contacts" data-url="/integration/contacts" data-title="Contacts" style="display: none">Contacts</article>
     <script>
       if ( location.protocol == 'file:' ) {
