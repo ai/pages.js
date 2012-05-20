@@ -57,7 +57,7 @@ For Ruby on Rails you can use gem for Assets Pipeline.
 1. Add `pagesjs` gem to `Gemfile`:
 
    ```ruby
-   gem 'pagesjs'
+   gem "pagesjs"
    ```
 
 2. Install gems:
