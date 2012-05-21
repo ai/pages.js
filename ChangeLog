@@ -1,3 +1,9 @@
+== 0.0.3 (Sergey Muravyov-Apostol)
+* Allow to add listener for all new content.
+* Allow to set animation page options in JS.
+* Cache page options to tag data.
+* Fix gemspec issue with Bundler.
+
 == 0.0.2 (Kondraty Ryleyev)
 * Fix Pages.js disabling in onready event.
 
