@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.files            = ['vendor/assets/javascripts/pages.js',
                         'lib/pagesjs.rb',
-                        'LICENSE', 'README.md']
-  s.extra_rdoc_files = ['LICENSE', 'README.md']
+                        'LICENSE', 'README.md', 'ChangeLog']
+  s.extra_rdoc_files = ['LICENSE', 'README.md', 'ChangeLog']
   s.require_path     = 'lib'
 end

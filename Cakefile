@@ -136,6 +136,7 @@ task 'gem', 'Build RubyGem package', ->
   fs.copyFileSync('gem/pagesjs.rb', 'build/lib/pagesjs.rb')
   fs.copyFileSync('lib/pages.js',   'build/vendor/assets/javascripts/pages.js')
   fs.copyFileSync('README.md',      'build/README.md')
+  fs.copyFileSync('ChangeLog',      'build/ChangeLog')
   fs.copyFileSync('LICENSE',        'build/LICENSE')
   exec 'cd build/; gem build pagesjs.gemspec', (error, message) ->
     if error

@@ -1,0 +1,5 @@
+== 0.0.2 (Kondraty Ryleyev)
+* Fix Pages.js disabling in onready event.
+
+== 0.0.1 (Pavel Pestel)
+* Initial release.
