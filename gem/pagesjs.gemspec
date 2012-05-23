@@ -4,10 +4,10 @@ Gem::Specification.new do |s|
   s.name        = 'pagesjs'
   s.version     = '0.0.3'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Andrey “A.I.” Sitnik']
+  s.authors     = ['Andrey "A.I." Sitnik']
   s.email       = ['andrey@sitnik.ru']
   s.homepage    = 'https://github.com/ai/pages.js'
-  s.summary     = 'Pages.js – is a framework for History pushState.'
+  s.summary     = 'Pages.js - is a framework for History pushState.'
   s.description = 'Pages.js allow you to manage pages JS code and ' +
                   'forget about low-level History API.'
 
