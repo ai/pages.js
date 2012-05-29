@@ -239,41 +239,30 @@ describe 'Pages', ->
       callback.should.have.been.called
       Pages.animating.waiting.should.be.false
 
-  describe '._subfind()', ->
-
-    it 'should create subfind function', ->
-      html '<div class="a"><a href="#"></a></div>' +
-           '<div class="b"><a href="#"></a></div>'
-
-      a = Pages._subfind(find('.a'))
-      b = Pages._subfind(find('.b'))
-
-      a('a').should.have.length(1)
-      a('a').parent().should.be('.a')
-      b('a').should.have.length(1)
-      b('a').parent().should.be('.b')
-
   describe '._enlive()', ->
 
     it 'should run load event', ->
       h = $('<div class="a"></div>' +
             '<div class="a"></div>' +
             '<div><div class="b"></div></div>')
-      a = sinon.spy()
-      b = sinon.spy()
-      c = sinon.spy()
+      a  = sinon.spy()
+      b1 = sinon.spy()
+      b2 = sinon.spy()
+      c  = sinon.spy()
+      c  = sinon.spy()
       Pages.add('.a', a)
-      Pages.add('.b', b)
-      Pages.add('.c', c)
+      Pages.add('.b', b1)
+      Pages.add('.b', b2)
 
       Pages._enlive(h)
 
       a.should.have.been.calledOnce
-      b.should.have.been.calledOnce
+      b1.should.have.been.calledOnce
+      b2.should.have.been.calledOnce
       c.should.not.have.been.called
 
-      h.filter('.a').data('page').should.eql(Pages._pages[0])
-      h.find('.b').data('page').should.eql(Pages._pages[1])
+      h.filter('.a').data('pages').should.eql([Pages._pages[0]])
+      h.find('.b').data('pages').should.eql([Pages._pages[1], Pages._pages[2]])
 
     it 'should run common content listeners', ->
       h = $('<div />')
@@ -282,6 +271,35 @@ describe 'Pages', ->
       Pages._enlive(h)
 
       a.should.have.been.calledOnce
+
+  describe '._callbackArgs()', ->
+
+    it 'should return arguments for callback', ->
+      html '<div class="a"><a href="#"></a></div>' +
+           '<div class="b"><a href="#"></a></div>'
+      args = Pages._callbackArgs(find('.a'))
+
+      args[0].should.eql(jQuery)
+      args[1]('a').should.be('.a a')
+      args[2].should.be('.a')
+
+  describe '._callback()', ->
+
+    it 'should run all callbacks', ->
+      a = open: sinon.spy(), close: sinon.spy()
+      b = open: sinon.spy()
+      div = $('<div />').data(pages: [a, b])
+      sinon.stub(Pages, '_callbackArgs', -> [1, 2, 3])
+
+      Pages._callback(div, 'open')
+
+      a.open.should.have.been.calledOnce
+      b.open.should.have.been.calledOnce
+      a.close.should.not.have.been.called
+
+      Pages._callbackArgs.should.have.been.calledWith(div)
+      a.open.should.have.been.calledWith(1, 2, 3)
+      a.open.should.have.been.calledOn(div)
 
   describe '._setCurrent()', ->
 
