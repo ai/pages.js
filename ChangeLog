@@ -1,3 +1,9 @@
+== 0.0.4 (Mikhail Bestuzhev-Ryumin)
+* Allow to set several page options for one page.
+* Set empty jQuery object to Pages.current on load.
+* Remove non-ASCII symbols from gemspec.
+* Print testing URL in test task.
+
 == 0.0.3 (Sergey Muravyov-Apostol)
 * Allow to add listener for all new content.
 * Allow to set animation page options in JS.
