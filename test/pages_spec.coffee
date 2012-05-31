@@ -48,7 +48,7 @@ describe 'Pages', ->
 
     it 'should call load callback at all pages', ->
       callback = ($, $$, page) ->
-        page.should.to.have.length(2)
+        page.length.should.eql(2)
 
       Pages.add('.a', callback)
       html '<article class="page a"><a href=""></a></article>' +
@@ -57,7 +57,7 @@ describe 'Pages', ->
     it 'should pass arguments to callbacks', ->
       callback = ($, $$, page) ->
         $.should.eql(jQuery)
-        $$('a').should.to.have.length(1)
+        $$('a').length.should.eql(1)
         this.should.eql(page)
         page.should.have.class('a')
 
@@ -111,13 +111,13 @@ describe 'Pages', ->
 
     it 'should add events', ->
       Pages.enable()
-      $(window).data('events').popstate.should.to.have.length(1)
-      $(Pages._document).data('events').click.should.to.have.length(1)
+      $(window).data('events').popstate.length.should.eql(1)
+      $(Pages._document).data('events').click.length.should.eql(1)
 
     it 'should not enabled twice', ->
       Pages.enable().should.be.true
       Pages.enable().should.be.false
-      $(window).data('events').popstate.should.to.have.length(1)
+      $(window).data('events').popstate.length.should.eql(1)
 
   describe '.disable()', ->
 
@@ -188,7 +188,7 @@ describe 'Pages', ->
            '<article class="page b" data-url="/a">' +
              '<article class="page" data-url="/a"></article>' +
            '</article>'
-      Pages.page('/a', find('.b')).should.have.length(2)
+      Pages.page('/a', find('.b')).length.should.eql(2)
 
   describe '.pagesSelector', ->
 
