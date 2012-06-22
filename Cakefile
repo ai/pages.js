@@ -133,11 +133,10 @@ task 'min', 'Create minimized version of library', ->
 
 task 'gem', 'Build RubyGem package', ->
   fs.rmrfSync('build/') if path.existsSync('build/')
-  wrench.mkdirSyncRecursive('build/lib/')
-  wrench.mkdirSyncRecursive('build/vendor/assets/javascripts/')
+  wrench.mkdirSyncRecursive('build/lib/assets/javascripts/')
   fs.copyFileSync('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
   fs.copyFileSync('gem/pagesjs.rb', 'build/lib/pagesjs.rb')
-  fs.copyFileSync('lib/pages.js',   'build/vendor/assets/javascripts/pages.js')
+  fs.copyFileSync('lib/pages.js',   'build/lib/assets/javascripts/pages.js')
   fs.copyFileSync('README.md',      'build/README.md')
   fs.copyFileSync('ChangeLog',      'build/ChangeLog')
   fs.copyFileSync('LICENSE',        'build/LICENSE')

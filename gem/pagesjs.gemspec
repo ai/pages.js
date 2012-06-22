@@ -13,8 +13,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'sprockets', '>= 2'
 
-  s.files            = ['vendor/assets/javascripts/pages.js',
-                        'lib/pagesjs.rb',
+  s.files            = ['lib/assets/javascripts/pages.js', 'lib/pagesjs.rb',
                         'LICENSE', 'README.md', 'ChangeLog']
   s.extra_rdoc_files = ['LICENSE', 'README.md', 'ChangeLog']
   s.require_path     = 'lib'
