@@ -4,7 +4,6 @@ http   = require('http')
 path   = require('path')
 glob   = require('glob')
 coffee = require('coffee-script')
-wrench = require('wrench')
 uglify = require('uglify-js')
 
 mocha =
@@ -117,7 +116,8 @@ task 'test', 'Run specs server', ->
   console.log('Open http://localhost:8000/')
 
 task 'clean', 'Remove all generated files', ->
-  wrench.rmdirSyncRecursive('pkg/') if path.existsSync('pkg/')
+  fs.removeSync('build/') if path.existsSync('build/')
+  fs.removeSync('pkg/')   if path.existsSync('pkg/')
 
 task 'min', 'Create minimized version of library', ->
   fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
@@ -132,14 +132,17 @@ task 'min', 'Create minimized version of library', ->
   fs.writeFileSync("pkg/pages-#{version}.min.js", min)
 
 task 'gem', 'Build RubyGem package', ->
-  fs.rmrfSync('build/') if path.existsSync('build/')
-  wrench.mkdirSyncRecursive('build/lib/assets/javascripts/')
-  fs.copyFileSync('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
-  fs.copyFileSync('gem/pagesjs.rb', 'build/lib/pagesjs.rb')
-  fs.copyFileSync('lib/pages.js',   'build/lib/assets/javascripts/pages.js')
-  fs.copyFileSync('README.md',      'build/README.md')
-  fs.copyFileSync('ChangeLog',      'build/ChangeLog')
-  fs.copyFileSync('LICENSE',        'build/LICENSE')
+  fs.removeSync('build/') if path.existsSync('build/')
+  fs.mkdirSync('build/lib/assets/javascripts/')
+
+  copy = require('fs-extra/lib/copy').copyFileSync
+  copy('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
+  copy('gem/pagesjs.rb',      'build/lib/pagesjs.rb')
+  copy('lib/pages.js',        'build/lib/assets/javascripts/pages.js')
+  copy('README.md',             'build/README.md')
+  copy('ChangeLog',           'build/ChangeLog')
+  copy('LICENSE',             'build/LICENSE')
+
   exec 'cd build/; gem build pagesjs.gemspec', (error, message) ->
     if error
       process.stderr.write(error.message)
@@ -147,5 +150,5 @@ task 'gem', 'Build RubyGem package', ->
     else
       fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
       gem = glob.sync('build/*.gem')[0]
-      fs.copyFileSync(gem, gem.replace(/^build\//, 'pkg/'))
-      wrench.rmdirSyncRecursive('build/')
+      copy(gem, gem.replace(/^build\//, 'pkg/'))
+      fs.removeSync('build/')
