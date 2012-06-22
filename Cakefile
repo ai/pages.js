@@ -100,16 +100,16 @@ task 'test', 'Run specs server', ->
       res.writeHead 200, { 'Content-Type': 'text/html' }
       res.write mocha.html()
     else if req.url == '/pages.js'
-      res.writeHead 200, {'Content-Type': 'text/javascript'}
+      res.writeHead 200, { 'Content-Type': 'text/javascript' }
       res.write mocha.lib()
     else if req.url == '/jquery.js'
-      res.writeHead 200, {'Content-Type': 'text/javascript'}
+      res.writeHead 200, { 'Content-Type': 'text/javascript' }
       res.write mocha.jquery()
     else if req.url == '/integration'
       res.writeHead 200, { 'Content-Type': 'text/html' }
       res.write fs.readFileSync('test/integration.html')
     else
-      res.writeHead 404, {'Content-Type': 'text/plain'}
+      res.writeHead 404, { 'Content-Type': 'text/plain' }
       res.write 'Not Found'
     res.end()
   server.listen 8000
