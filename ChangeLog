@@ -1,3 +1,10 @@
+== 0.0.5 (Pyotr Kakhovsky)
+* Add data.from with URL changing source.
+* Pages.open() will change URL if it necessary.
+* Don’t track location hash changes.
+* Don’t run animation, when page wasn’t be changed.
+* Use lib/assets path in gem instead of vendor/assets.
+
 == 0.0.4 (Mikhail Bestuzhev-Ryumin)
 * Allow to set several page options for one page.
 * Set empty jQuery object to Pages.current on load.
