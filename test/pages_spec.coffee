@@ -97,8 +97,7 @@ describe 'Pages', ->
 
   describe '.enable()', ->
 
-    beforeEach ->
-      Pages.disable()
+    beforeEach -> Pages.disable()
 
     it 'should enable history management', ->
       Pages.enable().should.be.true
@@ -151,7 +150,12 @@ describe 'Pages', ->
 
   describe '.open()', ->
 
-    beforeEach -> sinon.stub(Pages, '_openPage')
+    beforeEach ->
+      sinon.stub(Pages, '_openPage')
+      sinon.stub(history, 'pushState')
+
+    afterEach ->
+      history.pushState.restore?()
 
     it 'should open loaded page', ->
       html '<article class="page a" data-url="/a"></article>'
@@ -175,6 +179,14 @@ describe 'Pages', ->
       find('.a').should.be.exists
       Pages._loadPages.should.have.been.called
       Pages._openPage.should.have.been.called
+
+    it 'should change url if it necessary', ->
+      html '<article class="page a" data-url="/a"></article>'
+      Pages.open('/a')
+      history.pushState.should.have.been.calledWith({ }, '', '/a')
+
+      Pages.open('/a')
+      history.pushState.should.have.been.once
 
   describe '.page()', ->
 
@@ -327,9 +339,7 @@ describe 'Pages', ->
 
   describe '._openLink()', ->
 
-    beforeEach ->
-      sinon.stub(Pages, 'open')
-      sinon.stub(history, 'pushState')
+    beforeEach -> sinon.stub(Pages, 'open')
 
     afterEach ->
       history.pushState.restore?()
@@ -338,11 +348,6 @@ describe 'Pages', ->
       html '<a href="/a" data-a="1"></a>'
       Pages._openLink(find('a')).should.be.false
       Pages.open.should.have.been.calledWith('/a', { a: 1, link: find('a') })
-
-    it 'should change document location', ->
-      html '<a href="/a" data-a="1"></a>'
-      Pages._openLink(find('a'))
-      history.pushState.should.have.been.calledWith({ }, '', '/a')
 
     it 'should not open external url by link', ->
       html '<a href="http://example.com/"></a>'
