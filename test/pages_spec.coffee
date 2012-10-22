@@ -426,6 +426,19 @@ describe 'Pages', ->
       Pages._openPage(find('.a'))
       Pages.animations.a.animate.should.been.called
 
+    it 'should not show animation when page will not be changed', ->
+      html '<article class="page a" data-url="/a"></article>'
+      Pages.current = find('.a')
+
+      Pages.animations.test = { animate: sinon.spy() }
+      Pages.animation = 'test'
+      sinon.stub(Pages, '_setCurrent')
+
+      Pages._openPage(find('.a'))
+
+      Pages.animations.test.animate.should.not.been.called
+      Pages._setCurrent.should.been.called
+
   describe '._loadPages()', ->
 
     it 'should load new page', ->
