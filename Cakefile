@@ -20,11 +20,7 @@ mocha =
               <script>#tests#</script>
               <script>
                 jQuery(document).ready(function() {
-                  mocha.setup({
-                    ui: 'bdd',
-                    reporter: mocha.reporters.HTML,
-                    ignoreLeaks: true
-                  });
+                  mocha.setup({ ui: 'bdd', ignoreLeaks: true });
                   mocha.run();
                 });
               </script>
@@ -120,7 +116,7 @@ task 'clean', 'Remove all generated files', ->
   fs.removeSync('pkg/')   if path.existsSync('pkg/')
 
 task 'min', 'Create minimized version of library', ->
-  fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
+  fs.mkdirsSync('pkg/') unless path.existsSync('pkg/')
   version = JSON.parse(fs.readFileSync('package.json')).version
   source  = fs.readFileSync('lib/pages.js').toString()
 
@@ -133,7 +129,7 @@ task 'min', 'Create minimized version of library', ->
 
 task 'gem', 'Build RubyGem package', ->
   fs.removeSync('build/') if path.existsSync('build/')
-  fs.mkdirSync('build/lib/assets/javascripts/')
+  fs.mkdirsSync('build/lib/assets/javascripts/')
 
   copy = require('fs-extra/lib/copy').copyFileSync
   copy('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
@@ -148,7 +144,7 @@ task 'gem', 'Build RubyGem package', ->
       process.stderr.write(error.message)
       process.exit(1)
     else
-      fs.mkdirSync('pkg/') unless path.existsSync('pkg/')
+      fs.mkdirsSync('pkg/') unless path.existsSync('pkg/')
       gem = glob.sync('build/*.gem')[0]
       copy(gem, gem.replace(/^build\//, 'pkg/'))
       fs.removeSync('build/')
