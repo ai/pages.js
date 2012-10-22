@@ -134,13 +134,13 @@ describe 'Pages', ->
     it 'should not open page by popstate event without URL changes', ->
       sinon.spy(Pages, 'open')
       $(window).trigger('popstate.pages')
-      Pages.open.should.not.have.been.calledWith('/')
+      Pages.open.should.not.have.been.called
 
     it 'should open page by popstate event, when URL change', ->
       Pages._lastUrl = null
       sinon.spy(Pages, 'open')
       $(window).trigger('popstate.pages')
-      Pages.open.should.have.been.calledWith('/')
+      Pages.open.should.have.been.calledWith('/', url: '/', from: 'popstate')
 
     it 'should open page by link click', ->
       sinon.spy(Pages, '_openLink')
@@ -164,7 +164,7 @@ describe 'Pages', ->
       sinon.stub(Pages, 'page').withArgs('/a').returns(a)
 
       Pages.open('/a').should.be.true
-      Pages._openPage.should.have.been.calledWith(a, { url: '/a' })
+      Pages._openPage.should.have.been.calledWith(a, { url: '/a', from: 'js' })
       Pages._lastUrl.should == '/a'
 
     it 'should load new page', ->
@@ -347,7 +347,10 @@ describe 'Pages', ->
     it 'should open url by link', ->
       html '<a href="/a" data-a="1"></a>'
       Pages._openLink(find('a')).should.be.false
-      Pages.open.should.have.been.calledWith('/a', { a: 1, link: find('a') })
+      Pages.open.should.have.been.calledWith '/a',
+        a:    1
+        from: 'link'
+        link: find('a')
 
     it 'should not open external url by link', ->
       html '<a href="http://example.com/"></a>'
