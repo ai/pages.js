@@ -78,7 +78,7 @@ describe 'Pages', ->
 
   describe '.init()', ->
 
-    it 'should trigger load events if Pages is enable', ->
+    it 'should trigger load events if Pages.js is enable', ->
       sinon.stub(Pages, '_enlive')
       html '<div />'
       Pages._enlive.should.have.been.calledWith($(Pages._document))
