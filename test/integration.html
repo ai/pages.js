@@ -25,6 +25,11 @@
 
       Pages.add('.home', function($, $$, page) {
         page.html(page.html() + '.');
+
+        $$('[role=contacts]').click(function() {
+          Pages.open('/integration/contacts')
+          return false;
+        });
       });
 
       Pages.add('.deals', function($, $$, page) {
@@ -53,7 +58,7 @@
         <li><a href="/integration/contacts">Contacts</a></li>
       </ul>
     </nav>
-    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home. See also <a href="/integration/contacts" data-page-animation="immediately">contacts</a><div role="del">DEL</div></article>
+    <article class="page home" data-url="/integration" data-title="Pages.js Integration Test">Home. See also <a href="/integration/contacts" data-page-animation="immediately">contacts</a> or open it <a href="#" role="contacts">from JS</a><div role="del">DEL</div></article>
     <article class="page contacts" data-url="/integration/contacts" data-title="Contacts" style="display: none">Contacts</article>
     <script>
       if ( location.protocol == 'file:' ) {
