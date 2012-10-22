@@ -340,9 +340,9 @@ describe 'Pages', ->
   describe '._openLink()', ->
 
     beforeEach -> sinon.stub(Pages, 'open')
-
-    afterEach ->
+    afterEach  ->
       history.pushState.restore?()
+      location.hash = ''
 
     it 'should open url by link', ->
       html '<a href="/a" data-a="1"></a>'
@@ -361,6 +361,11 @@ describe 'Pages', ->
       html '<a href="/a" data-pages-disable></a>'
       Pages._openLink(find('a')).should.be.true
       Pages.open.should.not.have.been.called
+
+    it 'should not call Pages.open without hash', ->
+      html '<a href="/a#b"></a>'
+      Pages._openLink(find('a')).should.be.false
+      Pages.open.should.have.been.calledWith '/a', from: 'link', link: find('a')
 
   describe '._openPage()', ->
 
