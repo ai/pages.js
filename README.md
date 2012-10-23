@@ -118,7 +118,7 @@ Callbacks get three arguments:
 * `$`: jQuery.
 * `$$`: jQuery finder only in current page (a little bit faster and more safely
   than `$`). For example `$$('a')` is equal to `$('a', page)`.
-* `page`: jQuery-nodes of selected pages.
+* `page`: jQuery-nodes of selected page.
 
 You can pass `load` as second argument without other options:
 
@@ -165,7 +165,7 @@ You can create you own animation, just add object with `animate` function.
 When animation ends, you *must* call `done` argument.
 
 ```js
-Pages.animation.cool = {
+Pages.animations.cool = {
   animate: function(prev, next, done, data) {
     prev.coolHiding();
     next.coolShowing(function() {
@@ -185,7 +185,7 @@ Argument `data` contains merged page and link data attributes:
 ```
 
 ```js
-Pages.animation.slide = {
+Pages.animations.slide = {
   animate: function(prev, next, done, data) {
     prev.slideHide(data.direction);
     next.slideShow(data.direction, function() {
