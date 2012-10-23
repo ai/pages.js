@@ -24,6 +24,8 @@ describe 'Pages', ->
     Pages.disable()
     for method of Pages
       Pages[method]?.restore?()
+    for method of Pages.animating
+      Pages.animating[method]?.restore?()
 
   html = (string) ->
     Pages.disable()
@@ -241,8 +243,7 @@ describe 'Pages', ->
     it 'should run callback, when animation will end', ->
       callback = sinon.spy()
 
-      Pages.animating.start()
-      Pages.animating.waiting.should.be.true
+      Pages.animating.waiting = true
 
       Pages.animating.wait(callback)
       callback.should.not.have.been.called
@@ -250,6 +251,21 @@ describe 'Pages', ->
       Pages.animating.end()
       callback.should.have.been.called
       Pages.animating.waiting.should.be.false
+
+    it 'should have shortcut', ->
+      done = null
+      callback = (arg) -> done = arg
+      sinon.spy(Pages.animating, 'wait')
+      sinon.spy(Pages.animating, 'end')
+
+      Pages.animating.run(callback)
+      Pages.animating.waiting.should.be.true
+      Pages.animating.end.should.not.have.been.called
+      Pages.animating.wait.should.have.been.called
+      done.should.be('function')
+
+      done()
+      Pages.animating.end.should.have.been.called
 
   describe '._enlive()', ->
 
@@ -387,7 +403,7 @@ describe 'Pages', ->
       sinon.spy(Pages.animations.test, 'animate')
       Pages.animation = 'test'
 
-      Pages.animating.start()
+      Pages.animating.waiting = true
       Pages._openPage(b, { a: 'a', b: 'b' })
       Pages.animations.test.animate.should.not.have.been.called
 
