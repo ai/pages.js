@@ -22,10 +22,8 @@ describe 'Pages', ->
     Pages.animation      = 'immediately'
     Pages.animations     = animations
     Pages.disable()
-    for method of Pages
-      Pages[method]?.restore?()
-    for method of Pages.animating
-      Pages.animating[method]?.restore?()
+    history.pushState.restore?()
+    Pages[i].restore?() for i of Pages
 
   html = (string) ->
     Pages.disable()
@@ -156,9 +154,6 @@ describe 'Pages', ->
       sinon.stub(Pages, '_openPage')
       sinon.stub(history, 'pushState')
 
-    afterEach ->
-      history.pushState.restore?()
-
     it 'should open loaded page', ->
       html '<article class="page a" data-url="/a"></article>'
 
@@ -233,6 +228,9 @@ describe 'Pages', ->
       document.title.should.eql('New')
 
   describe '.animating', ->
+
+    afterEach ->
+      Pages.animating[i].restore?() for i of Pages.animating
 
     it 'should run callbacks now without running animation', ->
       callback = sinon.spy()
@@ -356,9 +354,7 @@ describe 'Pages', ->
   describe '._openLink()', ->
 
     beforeEach -> sinon.stub(Pages, 'open')
-    afterEach  ->
-      history.pushState.restore?()
-      location.hash = ''
+    afterEach  -> location.hash = ''
 
     it 'should open url by link', ->
       html '<a href="/a" data-a="1"></a>'
