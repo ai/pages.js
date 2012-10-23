@@ -7,8 +7,9 @@
     <script src="/pages.js"></script>
     <script>
       jQuery.get = function(url, callback) {
+        var loading;
         if ( url == '/integration/deals' ) {
-          setTimeout(function() {
+          loading = setTimeout(function() {
             callback(
               '<article class="page deals" ' +
                 'data-url="/integration/deals" data-title="Deals">' +
@@ -17,6 +18,11 @@
               '</article>')
           }, 1000);
         }
+        return {
+          abort: function() {
+            clearTimeout(loading);
+          }
+        };
       };
 
       Pages.add(function($, $$, content) {

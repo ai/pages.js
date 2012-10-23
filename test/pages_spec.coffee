@@ -23,7 +23,7 @@ describe 'Pages', ->
     Pages.animations     = animations
     Pages.disable()
     history.pushState.restore?()
-    Pages[i].restore?() for i of Pages
+    Pages[i]?.restore?() for i of Pages
 
   html = (string) ->
     Pages.disable()
@@ -216,10 +216,17 @@ describe 'Pages', ->
     after -> jQuery.get.restore?()
 
     it 'should use jQuery GET AJAX request', ->
-      sinon.stub(jQuery, 'get')
+      sinon.stub(jQuery, 'get').returns(2)
       callback = ->
-      Pages.load('/a', a: 1, callback)
+      Pages.load('/a', a: 1, callback).should.eql(2)
       jQuery.get.should.have.been.calledWith('/a', callback)
+
+  describe '.stopLoading()', ->
+
+    it 'should call abort in loading object', ->
+      loading = { abort: sinon.spy() }
+      Pages.stopLoading(loading)
+      loading.abort.should.have.been.called
 
   describe '.title()', ->
 
@@ -500,7 +507,7 @@ describe 'Pages', ->
       load = ->
       sinon.stub Pages, 'load', (url, data, callback) -> load = callback
 
-      Pages._loadPages('/a', { a: 1 }, ->)
+      Pages._loadPages('/a', { a: 1 }, -> )
 
       body.should.have.class('page-loading')
       loading.should.have.been.called
@@ -519,7 +526,7 @@ describe 'Pages', ->
       load = ->
       sinon.stub Pages, 'load', (url, data, callback) -> load = callback
 
-      Pages._loadPages('/a', { link: a }, ->)
+      Pages._loadPages('/a', { link: a }, -> )
 
       a.should.have.class('page-loading')
       loading.should.have.been.called
@@ -528,3 +535,16 @@ describe 'Pages', ->
       load()
       a.should.not.have.class('page-loading')
       loaded.should.have.been.called
+
+    it 'should abort previous loading', ->
+      aborted = []
+      sinon.stub Pages, 'load', (url, data, callback) ->
+        { url: url, abort: -> aborted.push(url) }
+
+      Pages._loadPages('/a', { }, -> )
+      Pages._loading.url.should.eql('/a')
+      aborted.should.eql([])
+
+      Pages._loadPages('/b', { }, -> )
+      Pages._loading.url.should.eql('/b')
+      aborted.should.eql(['/a'])
