@@ -30,9 +30,10 @@ mocha =
                 }
                 #integration {
                   position: absolute;
+                  top: 1.53em;
                   margin-left: 80px;
                   font-weight: 200;
-                  font-size: 1em;
+                  font-size: 0.7em;
                 }
               </style>
             <body>
