@@ -135,7 +135,7 @@ task 'gem', 'Build RubyGem package', ->
   copy('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
   copy('gem/pagesjs.rb',      'build/lib/pagesjs.rb')
   copy('lib/pages.js',        'build/lib/assets/javascripts/pages.js')
-  copy('README.md',             'build/README.md')
+  copy('README.md',           'build/README.md')
   copy('ChangeLog',           'build/ChangeLog')
   copy('LICENSE',             'build/LICENSE')
 

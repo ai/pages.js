@@ -9,7 +9,7 @@ describe 'Pages', ->
     jQuery.ajax = ->
 
   beforeEach ->
-    Pages._document = $('<div />')[0]
+    Pages._doc = $('<div />')[0]
     Pages._current = $('')
     Pages.enable()
     animations = Pages.animations
@@ -27,13 +27,13 @@ describe 'Pages', ->
 
   html = (string) ->
     Pages.disable()
-    Pages._document = document.implementation.createHTMLDocument('')
-    $(Pages._document.body).html(string)
+    Pages._doc = document.implementation.createHTMLDocument('')
+    $(Pages._doc.body).html(string)
     Pages.init()
     Pages.enable()
 
   find = (selector) ->
-    jQuery(selector, Pages._document)
+    jQuery(selector, Pages._doc)
 
   describe '.add()', ->
 
@@ -81,7 +81,7 @@ describe 'Pages', ->
     it 'should trigger load events if Pages.js is enable', ->
       sinon.stub(Pages, '_enlive')
       html '<div />'
-      Pages._enlive.should.have.been.calledWith($(Pages._document))
+      Pages._enlive.should.have.been.calledWith($(Pages._doc))
 
     it 'should set current', ->
       html '<article class="page a"></article>'
@@ -111,7 +111,7 @@ describe 'Pages', ->
     it 'should add events', ->
       Pages.enable()
       $(window).data('events').popstate.length.should.eql(1)
-      $(Pages._document).data('events').click.length.should.eql(1)
+      $(Pages._doc).data('events').click.length.should.eql(1)
 
     it 'should not enabled twice', ->
       Pages.enable().should.be.true
@@ -127,7 +127,7 @@ describe 'Pages', ->
     it 'should remove events', ->
       Pages.disable()
       (typeof $(window).data('events') ).should.eql('undefined')
-      (typeof $(Pages._document).data('events') ).should.eql('undefined')
+      (typeof $(Pages._doc).data('events') ).should.eql('undefined')
 
   describe 'history events', ->
 
@@ -341,7 +341,7 @@ describe 'Pages', ->
            '<article class="page b"></article>'
       Pages.add('.a', open: sinon.spy(), close: sinon.spy())
       Pages.add('.b', open: sinon.spy(), close: sinon.spy())
-      Pages._enlive($(Pages._document))
+      Pages._enlive($(Pages._doc))
       Pages.current = $('')
 
       Pages._setCurrent(find('.a'))
