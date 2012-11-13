@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'pagesjs'
-  s.version     = '0.0.5'
+  s.version     = VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Andrey "A.I." Sitnik']
   s.email       = ['andrey@sitnik.ru']

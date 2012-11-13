@@ -6,36 +6,58 @@ glob   = require('glob')
 coffee = require('coffee-script')
 uglify = require('uglify-js')
 
+project =
+
+  package: ->
+    JSON.parse(fs.readFileSync('package.json'))
+
+  name: ->
+    @package().name
+
+  version: ->
+    @package().version
+
+  tests: ->
+    fs.readdirSync('test/').
+      filter( (i) -> i.match /\.coffee$/ ).
+      map( (i) -> "test/#{i}" )
+
+  libs: ->
+    fs.readdirSync('lib/').map( (i) -> "lib/#{i}" )
+
+  title: ->
+    @name()[0].toUpperCase() + @name()[1..-1]
+
 mocha =
 
   template: """
             <html>
             <head>
               <meta charset="UTF-8">
-              <title>Pages.js Tests</title>
-              <style>#style#</style>
-              <script src="/jquery.js"></script>
-              <script>#script#</script>
-              <script src="/pages.js"></script>
-              <script>#tests#</script>
-              <script>
-                jQuery(document).ready(function() {
-                  mocha.setup({ ui: 'bdd', ignoreLeaks: true });
-                  mocha.run();
-                });
-              </script>
+              <title>#title# Tests</title>
+              <link rel="stylesheet" href="/style.css">
               <style>
                 body {
                   padding: 0;
                 }
                 #integration {
                   position: absolute;
-                  top: 1.53em;
-                  margin-left: 80px;
+                  top: 1.45em;
+                  margin-left: 85px;
                   font-weight: 200;
                   font-size: 0.7em;
                 }
               </style>
+              #system#
+              <script>
+                chai.should();
+                mocha.setup({ ui: 'bdd', ignoreLeaks: true });
+                window.onload = function() {
+                  mocha.run();
+                };
+              </script>
+              #libs#
+              #tests#
             <body>
               <a href="/integration" id="integration" target="_blank">
                 see also integration test →
@@ -47,9 +69,10 @@ mocha =
 
   html: ->
     @render @template,
-      style:  @cdata(@style())
-      script: @cdata(@script())
-      tests:  @cdata(@tests())
+      system: @system()
+      libs:   @scripts project.libs()
+      tests:  @scripts project.tests()
+      title:  project.title()
 
   render: (template, params) ->
     html = template
@@ -57,58 +80,46 @@ mocha =
       html = html.replace("##{name}#", value.replace(/\$/g, '$$$$'))
     html
 
-  cdata: (text) ->
-    "/*<![CDATA[*/\n" +
-    text + "\n" +
-    "/*]]>*/"
+  scripts: (files) ->
+    files.map( (i) -> "<script src=\"/#{i}\"></script>" ).join("\n  ")
 
-  style: ->
-    fs.readFileSync('node_modules/mocha/mocha.css')
+  system: ->
+    @scripts ['node_modules/jquery-browser/lib/jquery.js',
+              'node_modules/mocha/mocha.js',
+              'node_modules/chai/chai.js',
+              'node_modules/sinon/lib/sinon.js',
+              'node_modules/sinon/lib/sinon/spy.js',
+              'node_modules/sinon/lib/sinon/stub.js',
+              'node_modules/sinon-chai/lib/sinon-chai.js',
+              'node_modules/chai-jquery/chai-jquery.js']
 
-  script: ->
-    @testLibs() +
-    "chai.should();\n" +
-    "mocha.setup('bdd');\n"
-
-  testLibs: ->
-    fs.readFileSync('node_modules/mocha/mocha.js') +
-    fs.readFileSync('node_modules/chai/chai.js') +
-    fs.readFileSync('node_modules/sinon/lib/sinon.js') +
-    fs.readFileSync('node_modules/sinon/lib/sinon/spy.js') +
-    fs.readFileSync('node_modules/sinon/lib/sinon/stub.js') +
-    fs.readFileSync('node_modules/sinon-chai/lib/sinon-chai.js') +
-    fs.readFileSync('node_modules/chai-jquery/chai-jquery.js')
-
-  jquery: ->
-    fs.readFileSync('node_modules/jquery-browser/lib/jquery.js')
-
-  lib: ->
-    fs.readFileSync('lib/pages.js')
-
-  tests: ->
-    files  = fs.readdirSync('test/').
-      filter( (i) -> i.match /\.coffee$/ ).map( (i) -> "test/#{i}" )
-    src = files.reduce ( (all, i) -> all + fs.readFileSync(i) ), ''
-    coffee.compile(src)
-
-task 'test', 'Run specs server', ->
+task 'server', 'Run test server', ->
   server = http.createServer (req, res) ->
     if req.url == '/'
-      res.writeHead 200, { 'Content-Type': 'text/html' }
+      res.writeHead 200, 'Content-Type': 'text/html'
       res.write mocha.html()
-    else if req.url == '/pages.js'
-      res.writeHead 200, { 'Content-Type': 'text/javascript' }
-      res.write mocha.lib()
-    else if req.url == '/jquery.js'
-      res.writeHead 200, { 'Content-Type': 'text/javascript' }
-      res.write mocha.jquery()
+
+    else if req.url == '/style.css'
+      res.writeHead 200, 'Content-Type': 'text/css'
+      res.write fs.readFileSync('node_modules/mocha/mocha.css')
+
     else if req.url == '/integration'
-      res.writeHead 200, { 'Content-Type': 'text/html' }
+      res.writeHead 200, 'Content-Type': 'text/html'
       res.write fs.readFileSync('test/integration.html')
+
+    else if fs.existsSync('.' + req.url)
+      file = fs.readFileSync('.' + req.url).toString()
+      if req.url.match(/\.coffee$/)
+        file = coffee.compile(file)
+      if req.url.match(/\.(js|coffee)$/)
+        res.writeHead 200, 'Content-Type': 'application/javascript'
+      res.write file
+
     else
-      res.writeHead 404, { 'Content-Type': 'text/plain' }
+      res.writeHead 404, 'Content-Type': 'text/plain'
       res.write 'Not Found'
     res.end()
+
   server.listen 8000
   console.log('Open http://localhost:8000/')
 
@@ -118,34 +129,42 @@ task 'clean', 'Remove all generated files', ->
 
 task 'min', 'Create minimized version of library', ->
   fs.mkdirsSync('pkg/') unless path.existsSync('pkg/')
-  version = JSON.parse(fs.readFileSync('package.json')).version
-  source  = fs.readFileSync('lib/pages.js').toString()
+  for file in project.libs()
+    source = fs.readFileSync(file).toString()
 
-  ast = uglify.parser.parse(source)
-  ast = uglify.uglify.ast_mangle(ast)
-  ast = uglify.uglify.ast_squeeze(ast)
-  min = uglify.uglify.gen_code(ast)
+    ast = uglify.parser.parse(source)
+    ast = uglify.uglify.ast_mangle(ast)
+    ast = uglify.uglify.ast_squeeze(ast)
+    min = uglify.uglify.gen_code(ast)
 
-  fs.writeFileSync("pkg/pages-#{version}.min.js", min)
+    pkg = file.replace('lib/', 'pkg/').
+      replace('.js', "-#{project.version()}.min.js")
+    fs.writeFileSync(pkg, min)
 
 task 'gem', 'Build RubyGem package', ->
   fs.removeSync('build/') if path.existsSync('build/')
   fs.mkdirsSync('build/lib/assets/javascripts/')
 
   copy = require('fs-extra/lib/copy').copyFileSync
-  copy('gem/pagesjs.gemspec', 'build/pagesjs.gemspec')
-  copy('gem/pagesjs.rb',      'build/lib/pagesjs.rb')
-  copy('lib/pages.js',        'build/lib/assets/javascripts/pages.js')
-  copy('README.md',           'build/README.md')
-  copy('ChangeLog',           'build/ChangeLog')
-  copy('LICENSE',             'build/LICENSE')
+  gem  = project.name().replace('.', '')
 
-  exec 'cd build/; gem build pagesjs.gemspec', (error, message) ->
+  gemspec = fs.readFileSync("gem/#{gem}.gemspec").toString()
+  gemspec = gemspec.replace('VERSION', "'#{project.version()}'")
+  fs.writeFileSync("build/#{gem}.gemspec", gemspec)
+
+  copy("gem/#{gem}.rb",      "build/lib/#{gem}.rb")
+  copy('README.md',          'build/README.md')
+  copy('ChangeLog',          'build/ChangeLog')
+  copy('LICENSE',            'build/LICENSE')
+  for file in project.libs()
+    copy(file, file.replace('lib/', 'build/lib/assets/javascripts/'))
+
+  exec "cd build/; gem build #{gem}.gemspec", (error, message) ->
     if error
       process.stderr.write(error.message)
       process.exit(1)
     else
       fs.mkdirsSync('pkg/') unless path.existsSync('pkg/')
-      gem = glob.sync('build/*.gem')[0]
-      copy(gem, gem.replace(/^build\//, 'pkg/'))
+      gemFile = glob.sync('build/*.gem')[0]
+      copy(gemFile, gemFile.replace(/^build\//, 'pkg/'))
       fs.removeSync('build/')
