@@ -239,9 +239,12 @@ $(document).load(function() {
 3. Run test server:
 
    ```sh
-   ./node_modules/.bin/cake test
+   ./node_modules/.bin/cake server
    ```
 
-4. Open tests in browser: <localhost:8000>.
+4. Open tests in browser: [localhost:8000].
 5. Also you can see real usage example in integration test:
-   <localhost:8000/integration>.
+   [localhost:8000/integration].
+
+[localhost:8000]: http://localhost:8000
+[localhost:8000/integration]: http://localhost:8000/integration
