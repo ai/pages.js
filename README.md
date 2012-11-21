@@ -224,6 +224,16 @@ $(document).load(function() {
 });
 ```
 
+### History API support
+
+I prefer graceful degradation and think, that old browsers should reload full
+page by old way. But if you want to add page changes animation to old browser,
+you can redefine `Pages.getURL`, `Pages.setURL`, `Pages.watchURL` and
+`Pages.unwatchURL` methods to support any of History API polyffils.
+
+Also, you can redefine this methods for some hacks. For example, to synchronize
+open page between different tabs by Session Storage.
+
 ## Contributing
 
 1. To run tests you need node.js and npm. For example, in Ubuntu run:
