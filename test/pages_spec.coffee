@@ -199,16 +199,16 @@ describe 'Pages', ->
            '</article>'
       Pages.page('/a', find('.b')).length.should.eql(2)
 
-  describe '.pagesSelector', ->
+  describe '.selector', ->
 
     selector = null
-    beforeEach -> selector = Pages.pagesSelector
-    afterEach  -> Pages.pagesSelector = selector
+    beforeEach -> selector = Pages.selector
+    afterEach  -> Pages.selector = selector
 
     it 'should use in loaded page finding', ->
       html '<article class="page a" data-url="/a"></article>' +
            '<div data-url="/a"></div>'
-      Pages.pagesSelector = 'div'
+      Pages.selector = 'div'
       Pages.page('/a').should.have.be('div')
 
   describe '.load()', ->
