@@ -232,7 +232,23 @@ you can redefine `Pages.getURL`, `Pages.setURL`, `Pages.watchURL` and
 `Pages.unwatchURL` methods to support any of History API polyffils.
 
 Also, you can redefine this methods for some hacks. For example, to synchronize
-open page between different tabs by Session Storage.
+open page between different tabs by Session Storage, or to support one page
+sites:
+
+```js
+Pages.setURL = function(url) {
+  location.hash = url;
+};
+Pages.getURL = function() {
+  return location.hash;
+};
+Pages.watchURL = function(callback) {
+  $(window).on('hashchange.pages', callback);
+};
+Pages.unwatchURL = function() {
+  $(window).off('hashchange.pages');
+};
+```
 
 ## Contributing
 
