@@ -228,23 +228,33 @@ $(document).load(function() {
 
 I prefer graceful degradation and think, that old browsers should reload full
 page by old way. But if you want to add page changes animation to old browser,
-you can redefine `Pages.getURL`, `Pages.setURL`, `Pages.watchURL` and
-`Pages.unwatchURL` methods to support any of History API polyffils.
+you can redefine `Pages.isSupported`, `Pages.getURL`, `Pages.setURL`,
+`Pages.watchURL` and `Pages.unwatchURL` methods to support any of History API
+polyffils.
 
-Also, you can redefine this methods for some hacks. For example, to synchronize
-open page between different tabs by Session Storage, or to support one page
-sites:
+### URL Methods
+
+You can redefine way, that Pages.js use to get/set current page URL.
+For example, to synchronize open page between different tabs by Session Storage,
+or to support one page sites:
 
 ```js
+Pages.isSupported = function() {
+  return true;
+};
+
 Pages.setURL = function(url) {
   location.hash = url;
 };
+
 Pages.getURL = function() {
   return location.hash;
 };
+
 Pages.watchURL = function(callback) {
   $(window).on('hashchange.pages', callback);
 };
+
 Pages.unwatchURL = function() {
   $(window).off('hashchange.pages');
 };
