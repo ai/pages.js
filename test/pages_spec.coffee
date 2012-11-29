@@ -110,13 +110,13 @@ describe 'Pages', ->
 
     it 'should add events', ->
       Pages.enable()
-      $(window).data('events').popstate.length.should.eql(1)
-      $(Pages._doc).data('events').click.length.should.eql(1)
+      $._data(window, 'events').popstate.length.should.eql(1)
+      $._data(Pages._doc, 'events').click.length.should.eql(1)
 
     it 'should not enabled twice', ->
       Pages.enable().should.be.true
       Pages.enable().should.be.false
-      $(window).data('events').popstate.length.should.eql(1)
+      $._data(window, 'events').popstate.length.should.eql(1)
 
   describe '.disable()', ->
 
