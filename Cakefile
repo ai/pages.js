@@ -112,9 +112,9 @@ task 'server', 'Run test server', ->
 
     else if fs.existsSync('.' + pathname)
       file = fs.readFileSync('.' + pathname).toString()
-      if req.url.match(/\.coffee$/)
+      if pathname.match(/\.coffee$/)
         file = coffee.compile(file)
-      if req.url.match(/\.(js|coffee)$/)
+      if pathname.match(/\.(js|coffee)$/)
         res.writeHead 200, 'Content-Type': 'application/javascript'
       res.write file
 
