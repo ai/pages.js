@@ -1,6 +1,6 @@
 {
   "name": "pages.js",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "dependencies": {
     "jquery-browser": "1.8.2-1"
   },

@@ -1,3 +1,10 @@
+== 0.1 (Ignacy Hryniewiecki)
+* Add API to redefine work with URL.
+* Rename Pages.pagesSelector to Pages.selector.
+* Simpler API in Pages.animating.
+* Abort previous page loading, when start to load new one.
+* Decrease files size (by compressible code and UnglifyJS 2).
+
 == 0.0.5 (Pyotr Kakhovsky)
 * Add data.from with URL changing source.
 * Pages.open() will change URL if it necessary.
