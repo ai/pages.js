@@ -1,3 +1,5 @@
+Pages = window.Pages
+
 describe 'Pages', ->
   title      = null
   animations = null
@@ -11,6 +13,7 @@ describe 'Pages', ->
   beforeEach ->
     Pages._doc = $('<div />')[0]
     Pages._current = $('')
+    Pages._loading = null
     Pages.enable()
     animations = Pages.animations
 
@@ -126,8 +129,8 @@ describe 'Pages', ->
 
     it 'should remove events', ->
       Pages.disable()
-      (typeof $(window).data('events') ).should.eql('undefined')
-      (typeof $(Pages._doc).data('events') ).should.eql('undefined')
+      (typeof $._data(window, 'events') ).should.eql('undefined')
+      (typeof $._data(Pages._doc, 'events') ).should.eql('undefined')
 
   describe 'history events', ->
 
@@ -376,7 +379,7 @@ describe 'Pages', ->
       Pages._openLink(find('a')).should.be.true
       Pages.open.should.not.have.been.called
 
-    it 'should not open urb by disabled link', ->
+    it 'should not open url by disabled link', ->
       html '<a href="/a" data-pages-disable></a>'
       Pages._openLink(find('a')).should.be.true
       Pages.open.should.not.have.been.called
@@ -453,6 +456,7 @@ describe 'Pages', ->
     it 'should choose animation dynamically', ->
       Pages.add '.a', animation: -> 'a'
       html '<article class="page a" data-url="/a"></article>'
+      Pages.current = $('')
       Pages.animations.a = { animate: sinon.spy() }
 
       Pages._openPage(find('.a'))
