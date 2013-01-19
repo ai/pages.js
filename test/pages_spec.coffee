@@ -307,15 +307,6 @@ describe 'Pages', ->
       Pages._enlive(h)
 
       a.should.have.been.calledOnce
-	  
-    it 'should run init callback with correct argument', ->
-      h = $('<div><div class="callback"></div><div />')
-      a = sinon.spy()
-      b = ($, $$, page) ->  a() if $('.callback', page).length > 0
-      Pages.add(b)
-      Pages._enlive(h)
-
-      a.should.have.been.calledOnce
 
   describe '._callbackArgs()', ->
 
