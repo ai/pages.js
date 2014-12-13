@@ -1,4 +1,4 @@
-# Pages.js
+# Pages.js [![Build Status](https://travis-ci.org/ai/pages.js.svg)](https://travis-ci.org/ai/pages.js)
 
 Pages.js is a framework for [History pushState]. It allows you to manage
 pages JS code and forget about low-level APIs.
@@ -16,10 +16,11 @@ History pushState is supported by modern browsers, but Pages.js will work in
 browsers without this API too. They will load pages in an old way with document
 reloading.
 
-Sponsored by [Evil Martians].
+<a href="https://evilmartians.com/?utm_source=pages.js">
+<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54">
+</a>
 
 [History pushState]: http://diveintohtml5.info/history.html
-[Evil Martians]:     http://evilmartians.com/
 
 ## Quick Start
 
